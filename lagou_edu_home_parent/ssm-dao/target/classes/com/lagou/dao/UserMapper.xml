@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--用户分页&多条件组合查询-->
+<mapper namespace="com.lagou.dao.UserMapper">
+    <select id="findAllUserByPage" parameterType="com.lagou.domain.UserVo" resultType="com.lagou.domain.User">
+        select * from user
+        <where>
+            <if test="true">
+               and is_del !=1
+            </if>
+            <if test="username != null and username != ''">
+                and name = #{username}
+            </if>
+            <if test="startCreateTime !=null and endCreateTime !=null">
+                and create_time BETWEEN #{startCreateTime} AND #{endCreateTime}
+            </if>
+        </where>
+    </select>
+    <!--修改用户状态-->
+    <update id="updateUserStatus" parameterType="com.lagou.domain.User">
+        update user set status = #{status},update_time = #{update_time} where id = #{id}
+    </update>
+    <select id="login" parameterType="user" resultType="user">
+        select * from user where phone = #{phone}
+    </select>
+    <select id="findUserRelationRoleById" parameterType="int" resultType="com.lagou.domain.Role">
+        SELECT r.id, r.code, r.name, r.description FROM roles r INNER JOIN user_role_relation ur ON r.`id` = ur.`role_id` INNER JOIN USER u ON ur.`user_id` = u.`id` WHERE u.`id` = #{id}
+    </select>
+</mapper>
